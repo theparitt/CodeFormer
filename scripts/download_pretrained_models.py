@@ -1,8 +1,8 @@
 import argparse
 import os
 from os import path as osp
+import requests
 
-from basicsr.utils.download_util import load_file_from_url
 
 
 def download_pretrained_models(method, file_urls):
@@ -10,10 +10,28 @@ def download_pretrained_models(method, file_urls):
     os.makedirs(save_path_root, exist_ok=True)
 
     for file_name, file_url in file_urls.items():
-        save_path = load_file_from_url(url=file_url, model_dir=save_path_root, progress=True, file_name=file_name)
+        save_path = load_file_from_url(url=file_url, root=save_path_root, file_name=file_name)
+        if save_path != "error":
+            print(f"File downloaded successfully to {save_path}")
+        else:
+            print(f"Failed to download file {file_name} from {file_url}.")
+
+
+def load_file_from_url(url, root, file_name):
+    save_path = os.path.join(root, file_name)
+    response = requests.get(url)
+    if response.status_code == 200:
+        with open(save_path, 'wb') as file:
+            file.write(response.content)
+        return save_path
+    else:
+        print(f"Failed to download file from {url}. Status code: {response.status_code}")
+        return "error"
+
 
 
 if __name__ == '__main__':
+
     parser = argparse.ArgumentParser()
 
     parser.add_argument(

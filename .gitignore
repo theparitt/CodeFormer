@@ -128,4 +128,8 @@ tb_logger/
 run.sh
 *debug*
 *_old*
+myenv/
+*.pt
+*.pth
+*.onnx
 
